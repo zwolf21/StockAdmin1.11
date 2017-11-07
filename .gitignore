@@ -1,0 +1,12 @@
+media/*
+bin/
+lib/
+include/
+__pycache__/
+.vscode/
+share/
+man/
+.DS_STORE
+.Python
+*.py[cod]
+*.json
