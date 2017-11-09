@@ -6,27 +6,31 @@ from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 
+from .managers import BuyManager
 
 from utils.shortcuts import sequence_date_slugify
 
 
 
 class Buy(models.Model):
-    slug = models.SlugField('구매서번호', unique=True, blank=True, editable=False)
-    date = models.DateField('구매일자', default=datetime.date.today)
+    buy_num = models.SlugField('구매서번호', unique=True, blank=True, editable=False)
+    buy_date = models.DateField('구매일자', default=datetime.date.today)
     commiter = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
+
+    objects = BuyManager()
 
     class Meta:
         verbose_name = '구매요청서'
         verbose_name_plural = '구매요청서'
 
     def __str__(self):
-        return self.slug
+        return self.buy_num
 
     def save(self, **kwargs):
-        if not self.slug:
-            self.slug = sequence_date_slugify(self, 'date')
+        if not self.buy_num:
+            self.buy_num = sequence_date_slugify(self, 'date')
         return super(Buy, self).save(**kwargs)
 
 
@@ -34,12 +38,12 @@ class Buy(models.Model):
 class BuyItem(models.Model):
     buy = models.ForeignKey(Buy, blank=True, null=True)
     item = models.ForeignKey('profiles.BuyProfile')
-    buy_amount = models.IntegerField('수량')
+    buy_amount = models.IntegerField('수량', validators=[MinValueValidator(1, '1 이상의 값을 입력 해야합니다')])
 
     stocked_amount = models.IntegerField('입고수량', default=0, blank=True, null=True, editable=False)
     incompleted_amount = models.IntegerField('미입고수량', blank=True, null=True, editable=False)
     completed = models.BooleanField('입고완료', default=False, editable=False)
-    force_end = models.BooleanField('강제종결', default=False)
+    force_end = models.BooleanField('강제종결', default=False, blank=True) 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 

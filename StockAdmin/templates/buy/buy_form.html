@@ -1,0 +1,18 @@
+<h1>구매입력</h1>
+<form method="post" action=".">
+	{% csrf_token %}
+{{ form }}
+
+
+{{ formset.management_form }}
+<ul>
+{% for form in formset %}
+	<li>
+	{{ form }}
+	</li>
+
+{% endfor %}
+</ul>
+
+<input type="submit">
+</form>

@@ -5,8 +5,8 @@ from .models import Buy, BuyItem, BuyStock
 
 @admin.register(Buy)
 class BuyAdmin(admin.ModelAdmin):
-    list_display = 'slug', 'date',
-    list_filter = 'date',
+    list_display = 'buy_num', 'buy_date',
+    list_filter = 'buy_date',
 
 
 @admin.register(BuyItem)
